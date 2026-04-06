@@ -24,6 +24,10 @@ logging:
       openclassrooms:
         etudiant: info
 
+jwt:
+  secret: ${JWT_SECRET:thisIsADefaultSecretKeyForDevOnlyChangeInProduction}
+  expiration: 86400000 # 24h in ms
+
 management:
   endpoints:
     web:
