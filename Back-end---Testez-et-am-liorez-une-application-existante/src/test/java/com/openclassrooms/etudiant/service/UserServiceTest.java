@@ -24,10 +24,13 @@ public class UserServiceTest {
     private static final String LAST_NAME = "Doe";
     private static final String LOGIN = "LOGIN";
     private static final String PASSWORD = "PASSWORD";
+    private static final String ENCODED_PASSWORD = "ENCODED_PASSWORD";
     @Mock
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private JwtService jwtService;
     @InjectMocks
     private UserService userService;
 
@@ -74,5 +77,60 @@ public class UserServiceTest {
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(userCaptor.capture());
         assertThat(userCaptor.getValue()).isEqualTo(user);
+    }
+
+    @Test
+    public void test_login_null_login_throws_IllegalArgumentException() {
+        // THEN
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> userService.login(null, PASSWORD));
+    }
+
+    @Test
+    public void test_login_null_password_throws_IllegalArgumentException() {
+        // THEN
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> userService.login(LOGIN, null));
+    }
+
+    @Test
+    public void test_login_user_not_found_throws_IllegalArgumentException() {
+        // GIVEN
+        when(userRepository.findByLogin(LOGIN)).thenReturn(Optional.empty());
+
+        // THEN
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> userService.login(LOGIN, PASSWORD));
+    }
+
+    @Test
+    public void test_login_wrong_password_throws_IllegalArgumentException() {
+        // GIVEN
+        User user = new User();
+        user.setLogin(LOGIN);
+        user.setPassword(ENCODED_PASSWORD);
+        when(userRepository.findByLogin(LOGIN)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(PASSWORD, ENCODED_PASSWORD)).thenReturn(false);
+
+        // THEN
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> userService.login(LOGIN, PASSWORD));
+    }
+
+    @Test
+    public void test_login_successful_returns_token() {
+        // GIVEN
+        User user = new User();
+        user.setLogin(LOGIN);
+        user.setPassword(ENCODED_PASSWORD);
+        when(userRepository.findByLogin(LOGIN)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(PASSWORD, ENCODED_PASSWORD)).thenReturn(true);
+        when(jwtService.generateToken(any())).thenReturn("jwt-token");
+
+        // WHEN
+        String token = userService.login(LOGIN, PASSWORD);
+
+        // THEN
+        assertThat(token).isEqualTo("jwt-token");
     }
 }
