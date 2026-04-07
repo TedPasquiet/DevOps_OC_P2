@@ -49,7 +49,7 @@ export class HomeComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.router.navigate(['/']);
+          this.router.navigate(['/protected']);
         },
         error: () => {
           this.errorMessage = 'Identifiants incorrects. Veuillez réessayer.';
