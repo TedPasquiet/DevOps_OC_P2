@@ -1,0 +1,20 @@
+.home-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+.home-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.home-header h1 {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.home-header p {
+  color: #666;
+  font-size: 1.1rem;
+}
