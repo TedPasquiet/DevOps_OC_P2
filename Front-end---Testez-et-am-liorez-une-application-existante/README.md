@@ -41,7 +41,19 @@ This will compile your project and store the build artifacts in the `dist/` dire
 To execute unit tests with the [Jest](https://jestjs.io/) test runner, use the following command:
 
 ```bash
-jest
+npm test
+```
+
+To run tests in watch mode (re-runs on file changes):
+
+```bash
+npm test -- --watch
+```
+
+To generate a coverage report:
+
+```bash
+npm test -- --coverage
 ```
 
 ## Running end-to-end tests
