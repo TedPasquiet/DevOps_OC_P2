@@ -58,13 +58,19 @@ npm test -- --coverage
 
 ## Running end-to-end tests
 
-For end-to-end (e2e) testing, run:
+End-to-end tests are written with [Cypress](https://www.cypress.io/). The Angular dev server must be running first (`npm start`).
+
+Run all E2E tests in headless mode:
 
 ```bash
-ng e2e
+npm run e2e
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Open the Cypress interactive UI:
+
+```bash
+npm run e2e:open
+```
 
 ## Additional Resources
 
