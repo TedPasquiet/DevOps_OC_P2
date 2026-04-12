@@ -47,7 +47,7 @@ public class Student {
     private LocalDateTime updated_at;
 
     @Column(name = "date_of_birth")
-    private LocalDate date_of_birth;
+    private LocalDate dateOfBirth;
 
     @Column(name = "cursus")
     @NotBlank

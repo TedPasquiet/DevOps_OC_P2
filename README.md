@@ -22,6 +22,20 @@ Se placer dans le dossier `Back-end---Testez-et-am-liorez-une-application-exista
 mvn spring-boot:run
 ```
 
+### Lancer le back-end avec traces (aide au debug)
+
+```bash
+mvn spring-boot:run -e
+```
+
+### Lancer le back-end suite à un changement de config ou package
+
+```bash
+mvn clean compile spring-boot:run
+```
+
+
+
 ### Lancer les tests du back-end
 
 > Docker Desktop doit être démarré au préalable (les tests d'intégration utilisent Testcontainers).

@@ -37,7 +37,7 @@ public class StudentService {
         existing.setFirstName(updated.getFirstName());
         existing.setLastName(updated.getLastName());
         existing.setEmail(updated.getEmail());
-        existing.setDate_of_birth(updated.getDate_of_birth());
+        existing.setDateOfBirth(updated.getDateOfBirth());
         existing.setCursus(updated.getCursus());
         return studentRepository.save(existing);
     }
