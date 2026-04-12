@@ -37,4 +37,11 @@ describe('Login page', () => {
     cy.wait('@loginRequest');
     cy.contains('Identifiants incorrects').should('be.visible');
   });
+  it('should display validation message', () => {
+    cy.get('input[formControlName="login"]').should('have.value', '');
+    cy.get('input[formControlName="password"]').should('have.value', '');
+    cy.get('button[type="submit"]').click();
+    cy.contains('Le login est requis').should('be.visible');
+    cy.contains('Le mot de passe est requis').should('be.visible');
+  });
 });
