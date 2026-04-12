@@ -34,6 +34,12 @@ describe('HomeComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('form', () => {
+    it('should expose form controls via the form getter', () => {
+      expect(component.form).toBe(component.loginForm.controls);
+    });
+  });
+
   describe('form validation', () => {
     it('should be invalid when empty', () => {
       expect(component.loginForm.invalid).toBe(true);

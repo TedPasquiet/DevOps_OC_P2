@@ -32,6 +32,12 @@ describe('RegisterComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('form', () => {
+    it('should expose form controls via the form getter', () => {
+      expect(component.form).toBe(component.registerForm.controls);
+    });
+  });
+
   describe('form validation', () => {
     it('should be invalid when empty', () => {
       expect(component.registerForm.invalid).toBe(true);
@@ -86,6 +92,20 @@ describe('RegisterComponent', () => {
     it('should set submitted to true on submit', () => {
       component.onSubmit();
       expect(component.submitted).toBe(true);
+    });
+
+    it('should set errorMessage when registration fails', () => {
+      userServiceMock.register.mockReturnValue(throwError(() => new Error('Conflict')));
+      component.registerForm.setValue({
+        firstName: 'John',
+        lastName: 'Doe',
+        login: 'john',
+        password: 'password'
+      });
+
+      component.onSubmit();
+
+      expect(component.errorMessage).toBe('Cet utilisateur existe déjà.');
     });
   });
 
