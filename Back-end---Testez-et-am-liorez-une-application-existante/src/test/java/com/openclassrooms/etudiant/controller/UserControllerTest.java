@@ -142,7 +142,27 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
-    // TODO : loginSuccessful_returns200WithToken
-    // TODO : registerSuccessful_verifyMapperAndServiceAreCalled
-    // TODO : loginWithBadCredentials_returns400
+    @Test
+    public void loginSuccessful_returns200WithToken() throws Exception {
+        LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
+        loginRequestDTO.setLogin(LOGIN);
+        loginRequestDTO.setPassword(PASSWORD);
+        // WHEN / THEN
+        mockMvc.perform(MockMvcRequestBuilders.post(REGISTER_URL)
+                        .content(objectMapper.writeValueAsString(loginRequestDTO))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void registerSuccessful_verifyMapperAndServiceAreCalled() throws Exception {
+
+    }
+    
+    @Test
+    public void loginWithBadCredentials_returns400() throws Exception {
+
+    }
 }
