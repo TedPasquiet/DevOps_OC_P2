@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -33,6 +34,8 @@ public class UserControllerTest {
     private static final String LAST_NAME = "Doe";
     private static final String LOGIN = "login";
     private static final String PASSWORD = "password";
+    private static final String FAKE_LOGIN = "FakeJohn";
+    private static final String FAKE_PASSWORD = "Fakepassword";
 
     @Autowired
     private MockMvc mockMvc;
@@ -54,7 +57,7 @@ public class UserControllerTest {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Test
-    public void registerUserWithoutRequiredData() throws Exception {
+    public void registerUserWithoutRequiredData_returns400() throws Exception {
         // GIVEN
         RegisterDTO registerDTO = new RegisterDTO();
         // WHEN / THEN
@@ -67,7 +70,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void registerAlreadyExistUser() throws Exception {
+    public void registerAlreadyExistUser_returns400() throws Exception {
         // GIVEN
         RegisterDTO registerDTO = new RegisterDTO();
         registerDTO.setFirstName(FIRST_NAME);
@@ -88,14 +91,13 @@ public class UserControllerTest {
     }
 
     @Test
-    public void registerUserSuccessful() throws Exception {
+    public void registerUserSuccessful_returns201() throws Exception {
         // GIVEN
         RegisterDTO registerDTO = new RegisterDTO();
         registerDTO.setFirstName(FIRST_NAME);
         registerDTO.setLastName(LAST_NAME);
         registerDTO.setLogin(LOGIN);
         registerDTO.setPassword(PASSWORD);
-
         when(userDtoMapper.toEntity(any())).thenReturn(new User());
         // WHEN / THEN
         mockMvc.perform(MockMvcRequestBuilders.post(REGISTER_URL)
@@ -107,7 +109,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void loginWithNonExistentUser() throws Exception {
+    public void loginWithNullLogin_returns400() throws Exception {
         // GIVEN
         LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
         loginRequestDTO.setLogin(null);
@@ -125,7 +127,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void loginWithNonExistentPassword() throws Exception {
+    public void loginWithNullPassword_returns400() throws Exception {
         // GIVEN
         LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
         loginRequestDTO.setLogin(LOGIN);
@@ -148,7 +150,7 @@ public class UserControllerTest {
         loginRequestDTO.setLogin(LOGIN);
         loginRequestDTO.setPassword(PASSWORD);
         // WHEN / THEN
-        mockMvc.perform(MockMvcRequestBuilders.post(REGISTER_URL)
+        mockMvc.perform(MockMvcRequestBuilders.post(LOGIN_URL)
                         .content(objectMapper.writeValueAsString(loginRequestDTO))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -158,11 +160,37 @@ public class UserControllerTest {
 
     @Test
     public void registerSuccessful_verifyMapperAndServiceAreCalled() throws Exception {
-
+        RegisterDTO registerDTO = new RegisterDTO();                                                                                           
+        registerDTO.setFirstName(FIRST_NAME);                                                                                                    
+        registerDTO.setLastName(LAST_NAME);                                                                                                    
+        registerDTO.setLogin(LOGIN);                                                                                                      
+        registerDTO.setPassword(PASSWORD);                                                                                                
+        when(userDtoMapper.toEntity(any())).thenReturn(new User());                                                                       
+        // WHEN                                                                                                                           
+        mockMvc.perform(MockMvcRequestBuilders.post(REGISTER_URL)                                                                         
+                        .content(objectMapper.writeValueAsString(registerDTO))                                                            
+                        .contentType(MediaType.APPLICATION_JSON)                                                                          
+                        .accept(MediaType.APPLICATION_JSON))                                                                              
+                .andExpect(MockMvcResultMatchers.status().isCreated());                                                                   
+        // THEN                                                                                                                           
+        verify(userDtoMapper).toEntity(any());                                                                                     
+        verify(userService).register(any());
     }
     
     @Test
     public void loginWithBadCredentials_returns400() throws Exception {
-
+        // GIVEN
+        LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
+        loginRequestDTO.setLogin(FAKE_LOGIN);
+        loginRequestDTO.setPassword(FAKE_PASSWORD);
+        doThrow(new IllegalArgumentException("Bad credentials"))
+                .when(userService).login(FAKE_LOGIN, FAKE_PASSWORD);
+        // WHEN / THEN
+        mockMvc.perform(MockMvcRequestBuilders.post(LOGIN_URL)
+                 .content(objectMapper.writeValueAsString(loginRequestDTO))
+                 .contentType(MediaType.APPLICATION_JSON)
+                 .accept(MediaType.APPLICATION_JSON))
+         .andDo(print())
+         .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 }
