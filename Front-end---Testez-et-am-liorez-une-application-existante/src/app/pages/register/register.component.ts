@@ -1,7 +1,7 @@
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MaterialModule } from '../../shared/material.module';
 import { UserService } from '../../core/service/user.service';
 import { Register } from '../../core/models/Register';
@@ -18,8 +18,10 @@ export class RegisterComponent implements OnInit {
   private userService = inject(UserService);
   private formBuilder = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
+  private router = inject(Router);
   registerForm: FormGroup = new FormGroup({});
   submitted: boolean = false;
+  errorMessage: string = '';
 
   ngOnInit() {
     this.registerForm = this.formBuilder.group(
@@ -38,6 +40,7 @@ export class RegisterComponent implements OnInit {
 
   onSubmit(): void {
     this.submitted = true;
+    this.errorMessage = '';
     if (this.registerForm.invalid) {
       return;
     }
@@ -49,12 +52,14 @@ export class RegisterComponent implements OnInit {
     };
     this.userService.register(registerUser)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-      () => {
-        alert('SUCCESS!! :-)');
-        // TODO : router l'utilisateur vers la page de login
-      },
-    );
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/']);
+        },
+        error: () => {
+          this.errorMessage = 'Cet utilisateur existe déjà.';
+        }
+      });
   }
 
   onReset(): void {
